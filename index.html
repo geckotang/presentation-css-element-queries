@@ -233,17 +233,17 @@
 
 ```css
 /* 通常 */
-.widget-2 img{ width: 100%; }
-/* 200px以下 */
-.widget-2[max-width~="200px"] img { width: 50%; }
+.widget-2 img{ width: 50%; }
+/* 600px以下 */
+.widget-2[max-width~="600px"] img { width: 100%; }
 ```
 
-`.widget-2`の幅が`200px`以下の時に、その子要素である`img要素`の見た目を変化させる。
+`.widget-2`の幅が`600px`以上の時に、その子要素である`img要素`を`width:100%`にする
 </script>
 
 
 <section layout="code">
-  <h2>例1のデモ</h2>
+  <h2>例2のデモ</h2>
 
   <div class="demo  demo-2">
     <div class="debug-resizer">
@@ -276,7 +276,7 @@
     }
     /* 通常 */
     .demo-2 .widget-2 img{ width: 50%; }
-    /* 200px以下 */
+    /* 600px以下 */
     .demo-2 .widget-2[max-width~="600px"] img { width: 100%; }
   </style>
 </section>
