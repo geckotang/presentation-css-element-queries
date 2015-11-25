@@ -1,0 +1,692 @@
+<html>
+<head>
+  <link rel="stylesheet" href="./assets/talkie.min.css">
+  <link rel="stylesheet" href="./assets/monokai_sublime.min.css">
+  <title>CSS Element Queries</title>
+  <meta property="og:description" content="第61回 HTML5とか勉強会『CSS』の発表資料です">
+  <style>
+    [layout] {
+      padding-top: 30px;
+    }
+    [layout] pre { font-size: 1.4em; }
+    [layout] .demo {
+      box-sizing: border-box;
+      width: 100%;
+      padding: 2em;
+      background-color: #fff;
+    }
+    [layout] h1 {
+      font-size: 4.5em;
+    }
+    [layout][h-start] pre {
+      margin-right: auto;
+      margin-left: auto;
+    }
+    [layout] th,
+    [layout] td {
+      padding: 0.3em 1em;
+      border-bottom: 1px solid #ccc;
+    }
+    [layout] td:first-child {
+      white-space: nowrap;
+    }
+    [layout] code:not(.hljs) {
+      color: #000;
+      white-space: pre-wrap;
+      background: #F6F6F6;
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-size: 90%;
+      border: 1px solid rgba(0,0,0,0.3);
+    }
+    .debug-resizer {
+      width: 300px;
+      padding-bottom: 15px;
+      resize: both;
+      overflow: auto;
+      border: 1px solid #000;
+    }
+  </style>
+</head>
+<body>
+
+<script layout="cover" type="text/x-markdown">
+# 注意事項
+- これは発表資料で、普通のウェブページではありません
+- 環境によっては正常に表示されないかもしれません
+</script>
+
+
+<script layout="cover" h-start invert type="text/x-markdown"
+        backface="./img/bg-1.jpg"
+        backface-filter="blur(3px) brightness(0.8)">
+  <h1>CSS Element Queries</h1>
+  <a href="https://github.com/marcj/css-element-queries">https://github.com/marcj/css-element-queries</a>
+</script>
+
+
+<script layout="bullets" invert type="text/x-markdown"
+        backface="./img/profile.jpg"
+        backface-filter="blur(5px) brightness(0.5)">
+## 坂巻翔大郎 *Shotaro Sakamaki*
+- [株式会社ピクセルグリッド](http://www.pxgrid.com/)
+- フロントエンド・エンジニア
+- z-indexおじさん
+- Twitter: [@GeckoTang](https://twitter.com/GeckoTang)
+- GitHub: [geckotang](https://github.com/geckotang/)
+- CodePen: [geckotang](http://codepen.io/geckotang/)
+</script>
+
+
+<script layout="cover" invert type="text/x-markdown"
+      backface="./img/bg-codegrid.jpg"
+      backface-filter="blur(1px) brightness(.8)">
+
+## <object data="./img/codegrid.svg" type="image/svg+xml" width="200" height="200"></object>
+
+- CodeGridは、ピクセルグリッドの技術情報配信サービス  
+- 毎月12本更新される、フロントエンド開発に的を絞った記事を読むことができます
+- 全記事アクセス＋月4回配信、月額800円 *（税抜）*
+- ・[【CSS再入門】できる！中央寄せ 1](https://app.codegrid.net/entry/css-centering-1)
+- ・[【ちょっとお先にHTML 5.1】picture要素 1](https://app.codegrid.net/entry/picture-1)
+- ・[【そこが知りたい、Flexible Box】仕様を知る 1](https://app.codegrid.net/entry/flexiblebox-1)
+</script>
+
+
+<script layout="bullets" type="text/x-markdown">
+## 目次
+
+1. [CSS Element Queries](http://marcj.github.io/css-element-queries/)とは？
+1. 使い方
+1. デモ各種
+1. どうやってやってるの？
+1. 気をつけること
+1. 使う...?
+</script>
+
+
+<script layout="title" invert type="text/x-markdown"
+        backface="./img/bg-2.png"
+        backface-filter="blur(2px) brightness(0.4)">
+## [CSS Element Queries](http://marcj.github.io/css-element-queries/)とは？
+</script>
+
+
+<script layout="bullets" type="text/x-markdown">
+### [CSS Element Queries](http://marcj.github.io/css-element-queries/)
+
+**要素**の幅や高さに応じたスタイルを適用できるようするためのJavaScriptライブラリ。IE7+
+
+- [Container Queries: Once More Unto the Breach](http://alistapart.com/article/container-queries-once-more-unto-the-breach)
+- [Why Element Queries Matter](http://hugogiraudel.com/2014/04/22/why-element-queries-matter/)
+- [Media Queries Are Not The Answer: Element Query Polyfill](http://www.smashingmagazine.com/2013/06/media-queries-are-not-the-answer-element-query-polyfill/)
+- [Beyond Media Queries — It’s Time to Get Elemental](http://www.sitepoint.com/beyond-media-queries-time-get-elemental/)
+
+<pre>
+＿人人人人人人人人人人人人＿
+＞　CSSの仕様ではありません　＜
+￣Y^Y^Y^Y^Y^Y^Y^Y^Y^￣
+</pre>
+</script>
+
+
+<script layout="title" invert type="text/x-markdown"
+        backface="./img/bg-3.jpg"
+        backface-filter="blur(1px) brightness(0.4)">
+# 使い方
+</script>
+
+
+<script layout="bullets" type="text/x-markdown">
+1. ライブラリを読み込む
+2. CSSを書く
+</script>
+
+<section layout="code">
+<h2>1.ライブラリを読み込む </h2>
+
+<pre><code class="g-highlight hljs html">
+&lt;script src="src/ResizeSensor.js"&gt;&lt;/script&gt;
+&lt;script src="src/ElementQueries.js"&gt;&lt;/script&gt;
+</code>
+</pre>
+
+<p>GitHubからダウンロードしたJSを読みこませるだけ。</p>
+</section>
+
+
+<script layout="code" type="text/x-markdown">
+## 2. CSSを書く
+
+```css
+.widget-1[max-width~="400px"] { /* 幅が400px以下 */ }
+.widget-1[min-width~="400px"] { /* 幅が400px以上 */ }
+.widget-1[max-height~="400px"] { /* 高さが400px以下*/ }
+.widget-1[min-height~="400px"] { /* 高さが400px以上 */ }
+```
+
+ライブラリが読み込まれた状態で、<br>このような属性セレクタを書く
+
+</script>
+
+<script layout="code" type="text/x-markdown">
+## 例1
+
+```css
+/*通常*/
+.widget-1 {
+  background-color: gray;
+}
+/*400px以下*/
+.widget-1[max-width~="400px"] {
+  background-color: tomato;
+}
+```
+
+`.widget-1`の幅が`400px`以下の時に、見た目を変化させる。
+</script>
+
+
+<section layout="code">
+  <h2>例1のデモ</h2>
+
+  <div class="demo  demo-1">
+    <div class="debug-resizer">
+      <div class="widget-1">
+        The quick brown fox jumps over the lazy dog.
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <pre style="margin-bottom: 0;"><code class="g-highlight hljs html">
+    &lt;div class="widget-1"&gt;
+      The quick brown fox jumps over the lazy dog.
+    &lt;/div&gt;
+    </code>
+    </pre>
+    <p>.widget-1の幅に応じて見た目が変化する</p>
+  </div>
+
+  <style>
+    .demo-1 {
+      margin: 0 0 -30px !important;
+    }
+    /*通常*/
+    .demo-1 .widget-1 { background-color: gray; }
+    /*400px以下*/
+    .demo-1 .widget-1[max-width~="400px"] { background-color: tomato; }
+  </style>
+</section>
+
+
+<script layout="code" type="text/x-markdown">
+## 例2
+
+```css
+/* 通常 */
+.widget-2 img{ width: 100%; }
+/* 200px以下 */
+.widget-2[max-width~="200px"] img { width: 50%; }
+```
+
+`.widget-2`の幅が`200px`以下の時に、その子要素である`img要素`の見た目を変化させる。
+</script>
+
+
+<section layout="code">
+  <h2>例1のデモ</h2>
+
+  <div class="demo  demo-2">
+    <div class="debug-resizer">
+      <div class="widget-2">
+        <img src="img/profile.jpg" alt=""><img src="img/profile.jpg" alt="">
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <pre style="margin-bottom: 0;"><code class="g-highlight hljs html">
+    &lt;div class="widget-2"&gt;
+      &lt;img src="img/profile.jpg" alt=""&gt;
+      &lt;img src="img/profile.jpg" alt=""&gt;
+    &lt;/div&gt;
+    </code>
+    </pre>
+    <p>.widget-2の幅に応じて、子要素の見た目が変化する</p>
+  </div>
+
+  <style>
+    .demo-2 {
+      margin: 0 0 -30px !important;
+    }
+    .demo-2 .debug-resizer {
+      width: 500px;
+      height: 150px;
+      padding-right: 15px;
+      margin-bottom: 30px;
+    }
+    /* 通常 */
+    .demo-2 .widget-2 img{ width: 50%; }
+    /* 200px以下 */
+    .demo-2 .widget-2[max-width~="600px"] img { width: 100%; }
+  </style>
+</section>
+
+
+<script layout="bullets" type="text/x-markdown">
+### **CSS Media Queriesとどう違うの？**
+- CSS Media Queriesの場合は、**ビューポートの幅**などを基準に、スタイルを書く。
+- CSS Element Queriesを使うと、**要素の幅**を基準に、スタイルを書ける。<small>※ただし独自実装</small>
+```css
+.menu { display: none; }
+/* CSS Media Queries */
+@media all and (min-width: 520px) {
+  .menu { display: block; }
+}
+/* CSS Element Queries */
+.menu[min-width~="500px"] { display: block; }
+```
+</script>
+
+
+<script layout="title" invert type="text/x-markdown"
+        backface="./img/bg-5.jpg"
+        backface-filter="blur(1px) brightness(0.3)">
+# デモ各種
+- ・要素の幅に応じてスタイルを変更する
+- ・要素の高さに応じてスタイルを変更する
+- ・要素の幅や高さが変更したことを検知する
+- ・あとから要素を追加する際の注意
+</script>
+
+
+<script layout="bullets" type="text/x-markdown">
+### 要素の幅に応じてスタイルを変更する
+</script>
+
+<script layout="code" type="text/x-markdown">
+### HTML
+
+```html
+<div class="widget-3">
+  <div class="widget-3__item">
+    The quick brown fox jumps over the lazy dog.
+  </div>
+  <div class="widget-3__item">
+    The quick brown fox jumps over the lazy dog.
+  </div>
+</div>
+```
+</script>
+
+<script layout="code" type="text/x-markdown">
+### CSS
+
+```css
+    .widget-3 {
+      display: flex;
+      flex-direction: column;
+    }
+    .widget-3__item {
+      flex: 1 1 auto;
+      margin: 10px;
+      background-color: tomato;
+    }
+    /*800px以上*/
+    .widget-3[min-width~="800px"] {
+      flex-direction: row;
+    }
+```
+</script>
+
+
+<section layout="code">
+  <h2>デモ</h2>
+  <p>幅が変わると2カラムになる</p>
+  <div class="demo  demo-3">
+    <div class="debug-resizer">
+      <div class="widget-3">
+        <div class="widget-3__item">
+          The quick brown fox jumps over the lazy dog.
+        </div>
+        <div class="widget-3__item">
+          The quick brown fox jumps over the lazy dog.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    .demo-3 .widget-3 { display: flex; flex-direction: column; }
+    .demo-3 .widget-3__item { flex: 1 1 auto; margin: 10px; background-color: tomato; }
+    /*800px以上*/
+    .demo-3 .widget-3[min-width~="800px"] { flex-direction: row; }
+  </style>
+</section>
+
+
+<script layout="bullets" type="text/x-markdown">
+### 要素の高さに応じてスタイルを変更する
+</script>
+
+<script layout="code" type="text/x-markdown">
+### HTML
+```html
+<div class="debug-resizer">
+  <div class="widget-4">
+    <div class="widget-4__item">
+      The quick brown fox jumps over the lazy dog.
+    </div>
+  </div>
+</div>
+```
+</script>
+
+<script layout="code" type="text/x-markdown">
+### CSS
+
+```css
+.widget-4 {
+  height: 100%;
+  background-color: silver;
+}
+/*400px以下*/
+.widget-4[max-height~="150px"] {
+  background-color: chocolate;
+}
+/*800px以上*/
+.widget-4[min-height~="300px"] {
+  background-color: salmon;
+}
+```
+</script>
+
+
+<section layout="code">
+  <h2>デモ</h2>
+  <p>高さに応じて見た目を変える</p>
+  <div class="demo  demo-4">
+    <div class="debug-resizer">
+      <div class="widget-4">
+        <div class="widget-4__item">
+          The quick brown fox jumps over the lazy dog.
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <style>
+    .demo-4 .debug-resizer {
+      height: 150px;
+    }
+    .demo-4 .widget-4 {
+      height: 100%;
+      background-color: silver;
+    }
+    /*400px以下*/
+    .demo-4 .widget-4[max-height~="150px"] {
+      background-color: chocolate;
+    }
+    /*800px以上*/
+    .demo-4 .widget-4[min-height~="300px"] {
+      background-color: salmon;
+    }
+  </style>
+</section>
+
+
+<script layout="bullets" type="text/x-markdown">
+### 要素の幅や高さが変更したことを検知する
+
+```javascript
+new ResizeSensor(element, callback);
+```
+</script>
+
+
+<script layout="bullets" type="text/x-markdown">
+## HTML
+
+```html
+<div id="sample-result-w">#sampleの幅 : ??</div>
+<div id="sample-result-h">#sampleの高さ : ??</div>
+<div class="widget-5" id="sample">
+  The quick brown fox jumps over the lazy dog.
+  The quick brown fox jumps over the lazy dog.
+</div>
+```
+
+`#sample`の幅や高さの変化を監視する
+</script>
+
+
+<script layout="bullets" type="text/x-markdown">
+## JavaScript
+
+```javascript
+window.addEventListener('DOMContentLoaded', function() {
+  //幅や高さを計測する要素
+  var sample = document.getElementById('sample');
+  //計測結果を入れる要素
+  var result_w = document.getElementById('sample-result-w');
+  var result_h = document.getElementById('sample-result-h');
+  //幅や高さが変化したら値を取得する
+  new ResizeSensor(sample, function(){
+    var sample_style = window.getComputedStyle(sample);
+    var w = sample_style.width;
+    var h = sample_style.height;
+    result_w.innerHTML = '#sampleの幅 : ' + w;
+    result_h.innerHTML = '#sampleの高さ : ' + h;
+  });
+});
+```
+</script>
+
+
+<section layout="code">
+  <h2>デモ</h2>
+  <p>要素の幅や高さが変更したことを検知する</p>
+  <div class="demo  demo-5">
+    <div id="sample-result-w">#sampleの幅 : ??</div>
+    <div id="sample-result-h">#sampleの高さ : ??</div>
+    <div class="debug-resizer">
+      <div class="widget-5" id="sample">
+        The quick brown fox jumps over the lazy dog.
+        The quick brown fox jumps over the lazy dog.
+      </div>
+    </div>
+  </div>
+  <style>
+    .demo-5 .widget-5 {
+      background-color: #ccc;
+    }
+  </style>
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      //幅や高さを計測する要素
+      var sample = document.getElementById('sample');
+      //計測結果を入れる要素
+      var result_w = document.getElementById('sample-result-w');
+      var result_h = document.getElementById('sample-result-h');
+      //幅や高さが変化したら値を取得する
+      new ResizeSensor(sample, function(){
+        var sample_style = window.getComputedStyle(sample);
+        var w = sample_style.width;
+        var h = sample_style.height;
+        result_w.innerHTML = '#sampleの幅 : ' + w;
+        result_h.innerHTML = '#sampleの高さ : ' + h;
+      });
+    });
+  </script>
+</section>
+
+
+<script layout="bullets" type="text/x-markdown">
+### あとから要素を追加する際の注意
+
+<div class="page-demo-6">
+
+```html
+<!-- HTML -->
+<button id="add">追加</button>
+<div id="add-result"></div>
+```
+
+```css
+/*通常*/
+.widget-1 { background-color: gray; }
+/*400px以下*/
+.widget-1[max-width~="400px"] { background-color: tomato; }
+```
+
+```javascript
+//あとから追加する
+var add_button = document.getElementById('add');
+var add_result = document.getElementById('add-result');
+add_button.addEventListener('click', function(){
+  add_result.innerHTML = '<div class="widget-1">The quick brown fox jumps over the lazy dog. </div>';
+  add_button.disabled = true;
+});
+```
+
+</div>
+
+</script>
+
+
+<section layout="code">
+  <h2>期待通りに動かないデモ</h2>
+  <p>あとから追加された要素には、適用されない。</p>
+  <div class="demo  demo-6">
+    <button id="add">追加</button>
+    <div id="add-result"></div>
+  </div>
+  <style>
+    .page-demo-6 pre{
+      margin-bottom: 10px;
+    }
+    /*通常*/
+    .demo-6 .widget-1 { background-color: gray; }
+    /*400px以下*/
+    .demo-6 .widget-1[max-width~="400px"] { background-color: tomato; }
+  </style>
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      var add_button = document.getElementById('add');
+      var add_result = document.getElementById('add-result');
+      add_button.addEventListener('click', function(){
+        add_result.innerHTML = '<div class="debug-resizer"><div class="widget-1">The quick brown fox jumps over the lazy dog. </div></div>';
+        add_button.disabled = true;
+      });
+    });
+  </script>
+</section>
+
+
+<script layout="bullets" type="text/x-markdown">
+### あとから要素を追加する場合は
+
+```javascript
+ElementQueries.update();
+```
+
+を使用する。
+</script>
+
+<script layout="bullets" type="text/x-markdown">
+## JavaScript
+
+```javascript
+//あとから追加して、ElementQueries.update()を実行する
+var add2_button = document.getElementById('add2');
+var add2_result = document.getElementById('add2-result');
+add2_button.addEventListener('click', function(){
+  add2_result.innerHTML = '<div class="widget-1">The quick brown fox jumps over the lazy dog. </div>';
+  add2_button.disabled = true;
+  //監視対象を更新する
+  ElementQueries.update();
+});
+```
+要素が追加されたら、`ElementQueries.update();`を呼ぶ
+</script>
+
+
+<section layout="code">
+  <h2>期待通りに動くデモ</h2>
+  <p>あとから追加された要素にも、適用されるようにした。</p>
+  <div class="demo  demo-7">
+    <button id="add2">追加</button>
+    <div id="add2-result"></div>
+  </div>
+  <style>
+    .page-demo-7 pre{
+      margin-bottom: 10px;
+    }
+    /*通常*/
+    .demo-7 .widget-1 { background-color: gray; }
+    /*400px以下*/
+    .demo-7 .widget-1[max-width~="400px"] { background-color: tomato; }
+  </style>
+  <script>
+    window.addEventListener('DOMContentLoaded', function() {
+      var add2_button = document.getElementById('add2');
+      var add2_result = document.getElementById('add2-result');
+      add2_button.addEventListener('click', function(){
+        add2_result.innerHTML = '<div class="debug-resizer"><div class="widget-1">The quick brown fox jumps over the lazy dog. </div></div>';
+        add2_button.disabled = true;
+        ElementQueries.update();
+      });
+    });
+  </script>
+</section>
+
+
+<script layout="bullets" type="text/x-markdown">
+## どうやってやってるの？
+- ページが読み込まれた時に、CSSを解析し、対象の要素ごとに、その要素の幅などを計測する要素を配置する
+- 計測する要素の要素の幅が変化した際に、対象の要素の`max-width`属性値などを書き換えている
+- すると`<div class="widget-1" max-width="300px 350px">`のようになるので、CSSに記述した属性セレクタ（`[max-width~="300px"]`）が有効になる
+</script>
+
+
+<script layout="bullets" type="text/x-markdown">
+## 気をつけること
+- `img要素`では動かないので、`div要素`などで囲み、そのdiv要素を基準としたセレクタを書く必要がある
+- CSSはValidだけど、仕様には存在しないので...
+- 対象の要素が`position:static;`である場合は、`position:relative;`変更される
+- 異なるドメインから読み込んでいるCSSの場合、解析時にエラーが起きることがある
+- 前述のデモにある通り、DOMに要素が追加された時などに、更新用のメソッドを呼ぶ必要がある
+</script>
+
+
+<script layout="bullets" type="text/x-markdown">
+## 使う？
+- 利用シーンが思いつかないので、僕は使わない...（Media Queriesでやりたいことはできている）
+- ただ、Media Queriesのようにビューポート基準ではなく、そのモジュール（ブロック・コンポーネント）の幅や高さが基準になるのは、モジュール思考としては良いことだと思う。
+- 実装方法が面白かったので、何かしらの参考になりそう
+- こういった独自実装をしているものや、Polyfillを使う場合は、中身を見ておくと後でハマらない
+</script>
+
+
+<script layout="cover" invert type="text/x-markdown"
+      backface="./img/bg-last.jpg"
+      backface-filter="blur(1px) brightness(.8)">
+# Question?
+</script>
+
+
+<script src="./demo/ResizeSensor.js"></script>
+<script src="./demo/ElementQueries.js"></script>
+<script src="./assets/highlight.min.js"></script>
+<script src="./assets/talkie.js"></script>
+<script>
+  Talkie();
+  //section部分でのハイライト
+  var hBlock = document.querySelectorAll('.g-highlight');
+  for( var i=0; i<hBlock.length; i++ ) {
+    hljs.highlightBlock(hBlock[i]);
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Demo 1</title>
+<style>
+  .debug-resizer {
+    width: 300px;
+    padding-bottom: 15px;
+    resize: both;
+    overflow: auto;
+    border: 1px solid #000;
+  }
+
+  .widget-1 { background-color: gray; }
+  /*400px以下*/
+  .widget-1[max-width~="400px"] { background-color: tomato; }
+  /*800px以上*/
+  .widget-1[min-width~="800px"] { background-color: limegreen; }
+
+  .widget-2 { height: 100%; background-color: silver; }
+  /*400px以下*/
+  .widget-2[max-height~="200px"] { background-color: chocolate; }
+  /*800px以上*/
+  .widget-2[min-height~="400px"] { background-color: salmon; }
+
+  .widget-3 {
+    background-color: #ccc;
+  }
+
+</style>
+<script src="ResizeSensor.js"></script>
+<script src="ElementQueries.js"></script>
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+  //幅や高さが変化したら値を取得する
+  var sample = document.getElementById('sample');
+  var sample_result_w = document.getElementById('sample-result-w');
+  var sample_result_h = document.getElementById('sample-result-h');
+  new ResizeSensor(sample, function(){
+    var sample_style = window.getComputedStyle(sample);
+    var w = sample_style.width;
+    var h = sample_style.height;
+    sample_result_w.innerHTML = '#sampleの幅 : ' + w;
+    sample_result_h.innerHTML = '#sampleの高さ : ' + h;
+  });
+
+  //あとから追加する
+  var add_button = document.getElementById('add');
+  var add_result = document.getElementById('add-result');
+  add_button.addEventListener('click', function(){
+    add_result.innerHTML = '<div class="debug-resizer"><div class="widget-1">The quick brown fox jumps over the lazy dog. </div></div>';
+    add_button.disabled = true;
+  });
+
+  //あとから追加して、ElementQueries.update()を実行する
+  var add2_button = document.getElementById('add2');
+  var add2_result = document.getElementById('add2-result');
+  add2_button.addEventListener('click', function(){
+    add2_result.innerHTML = '<div class="debug-resizer"><div class="widget-1">The quick brown fox jumps over the lazy dog. </div></div>';
+    add2_button.disabled = true;
+    ElementQueries.update();
+  });
+
+});
+</script>
+</head>
+<body>
+
+
+<h1>要素の幅に応じてスタイルを変更する</h1>
+<div class="debug-resizer">
+  <div class="widget-1">
+    The quick brown fox jumps over the lazy dog.
+  </div>
+</div>
+
+
+<h1>要素の高さに応じてスタイルを変更する</h1>
+<div class="debug-resizer">
+  <div class="widget-2">
+    The quick brown fox jumps over the lazy dog.
+  </div>
+</div>
+
+
+<h1>要素の幅や高さが変更したことを検知する</h1>
+<div class="debug-resizer">
+  <div class="widget-3" id="sample">
+    The quick brown fox jumps over the lazy dog.
+  </div>
+</div>
+<div id="sample-result-w">#sampleの幅 : ??</div>
+<div id="sample-result-h">#sampleの高さ : ??</div>
+
+
+<h1>要素を追加する</h1>
+<button id="add">追加</button>
+<div id="add-result"></div>
+
+
+<h1>要素を追加し、ElementQueries.update()を実行する</h1>
+<button id="add2">追加</button>
+<div id="add2-result"></div>
+
+
+</body>
+</html>
